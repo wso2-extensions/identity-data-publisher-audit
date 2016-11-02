@@ -36,10 +36,10 @@
     <url>http://wso2.org</url>
 
     <scm>
-        <url>https://github.com/wso2-extensions/identity-data-publisher-authentication.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-authentication.git
+        <url>https://github.com/wso2-extensions/identity-data-publisher-audit.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-audit.git
         </developerConnection>
-        <connection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-authentication.git</connection>
+        <connection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-audit.git</connection>
         <tag>HEAD</tag>
     </scm>
 
