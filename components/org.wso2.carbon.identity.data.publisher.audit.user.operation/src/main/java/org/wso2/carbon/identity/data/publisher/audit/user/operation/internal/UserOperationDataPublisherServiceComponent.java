@@ -44,7 +44,6 @@ public class UserOperationDataPublisherServiceComponent {
 
     protected void activate(ComponentContext context) {
 
-        BundleContext bundleContext = context.getBundleContext();
         UserOperationDataPublisher handler = new UserOperationDataPublisher();
         context.getBundleContext().registerService(AbstractEventHandler.class.getName(), handler, null);
 
