@@ -18,7 +18,8 @@
 
 package org.wso2.carbon.identity.data.publisher.audit.user.operation.internal;
 
-import org.osgi.framework.BundleContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.event.stream.core.EventStreamService;
 import org.wso2.carbon.identity.data.publisher.audit.user.operation.impl.UserOperationDataPublisher;
@@ -41,42 +42,44 @@ import org.wso2.carbon.user.core.service.RealmService;
  * unbind="unsetEventStreamService"
  */
 public class UserOperationDataPublisherServiceComponent {
+    private static Log log = LogFactory.getLog(UserOperationDataPublisherServiceComponent.class);
 
     protected void activate(ComponentContext context) {
+        try {
+            UserOperationDataPublisher handler = new UserOperationDataPublisher();
+            context.getBundleContext().registerService(AbstractEventHandler.class.getName(), handler, null);
+        } catch (Throwable e) {
+            log.fatal("Error while activating the UserOperationDataPublisher", e);
+        }
+    }
 
-        UserOperationDataPublisher handler = new UserOperationDataPublisher();
-        context.getBundleContext().registerService(AbstractEventHandler.class.getName(), handler, null);
-
+    protected void deactivate(ComponentContext ctxt) {
+        if (log.isDebugEnabled()) {
+            log.debug("UserOperationDataPublisher is deactivated");
+        }
     }
 
     protected void setEventStreamService(EventStreamService publisherService) {
-
         UserOperationDataPublisherDataHolder.getInstance().setPublisherService(publisherService);
     }
 
     protected void unsetEventStreamService(EventStreamService publisherService) {
-
         UserOperationDataPublisherDataHolder.getInstance().setPublisherService(null);
     }
 
     protected void setRealmService(RealmService realmService) {
-
         UserOperationDataPublisherDataHolder.getInstance().setRealmService(realmService);
     }
 
     protected void unsetRealmService(RealmService realmService) {
-
         UserOperationDataPublisherDataHolder.getInstance().setRealmService(null);
     }
 
     protected void setRegistryService(RegistryService registryService) {
-
         UserOperationDataPublisherDataHolder.getInstance().setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-
         UserOperationDataPublisherDataHolder.getInstance().setRegistryService(null);
     }
-
 }

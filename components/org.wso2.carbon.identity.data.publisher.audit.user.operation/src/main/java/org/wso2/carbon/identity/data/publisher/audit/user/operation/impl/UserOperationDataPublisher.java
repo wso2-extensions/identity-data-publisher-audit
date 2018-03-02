@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.data.publisher.audit.user.operation.impl;
 
+import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,87 +38,84 @@ import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-public class UserOperationDataPublisher extends AbstractEventHandler {
+import java.util.Map;
 
+/**
+ * Publisher for user related operations.
+ */
+public class UserOperationDataPublisher extends AbstractEventHandler {
     private static final Log log = LogFactory.getLog(UserOperationDataPublisher.class);
-    public static final Log LOG = LogFactory.getLog(UserOperationDataPublisher.class);
 
     @Override
     public void handleEvent(Event event) throws IdentityEventException {
-
         switch (event.getEventName()) {
+            case IdentityEventConstants.Event.POST_ADD_USER:
+                handleAddUser(event);
+                break;
             case IdentityEventConstants.Event.POST_UPDATE_CREDENTIAL:
-                doPostUpdateCredential(getUsername(event), getCredentials(event), getUserStoreManager(event));
             case IdentityEventConstants.Event.POST_UPDATE_CREDENTIAL_BY_ADMIN:
-                doPostUpdateCredentialByAdmin(getUsername(event), getCredentials(event), getUserStoreManager(event));
+                handleUpdateCredential(event);
+                break;
+            default:
+                log.debug("Ignored unsupported event " + event.getEventName());
         }
     }
 
-    public void doPostUpdateCredential(String userName, Object credential, UserStoreManager userStoreManager) {
-
-        UserData userData = new UserData();
-        userData.setAction(IdentityEventConstants.Event.POST_UPDATE_CREDENTIAL);
-        String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        int userTenantId = userStoreManager.getRealmConfiguration().getTenantId();
-        String userTenantDomain = IdentityTenantUtil.getTenantDomain(userTenantId);
-        String userstoreDomain = UserCoreUtil.getDomainName(userStoreManager.getRealmConfiguration());
-        if (StringUtils.isEmpty(userstoreDomain)) {
-            userstoreDomain = UserCoreConstants.PRIMARY_DEFAULT_DOMAIN_NAME;
-        }
-        userData.setUserStore(userstoreDomain);
-        userData.setTenantDomain(userTenantDomain);
-        if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)) {
-            userData.setAction(actionHolder + "@" + actionHolderTenantDomain);
-        }
-        userData.setUsername(userName);
-        userData.setCredentials(credential);
-        userData.addParameter(org.wso2.carbon.identity.data.publisher.audit.common.AuditDataPublisherConstants.TENANT_ID, AuditDataPublisherUtils
-                .getTenantDomains(actionHolderTenantDomain, userTenantDomain));
-        doPublishUserData(userData);
-
+    /**
+     * Handle credential update related events.
+     * <p>
+     * Handles both POST_UPDATE_CREDENTIAL and POST_UPDATE_CREDENTIAL_BY_ADMIN
+     *
+     * @param event The event related to the credential update
+     */
+    private void handleUpdateCredential(Event event) {
+        UserData userData = getGeneralUserData(event);
+        publishUserData(userData);
     }
 
+    /**
+     * Handles POST_ADD_USER event.
+     *
+     * @param event The event related to the add user
+     */
+    private void handleAddUser(Event event) {
+        UserData userData = getGeneralUserData(event);
+        userData.setProfile((String) event.getEventProperties().get(IdentityEventConstants.EventProperty.PROFILE_NAME));
 
-    public void doPostUpdateCredentialByAdmin(String userName, Object credential, UserStoreManager
-            userStoreManager) {
+        // Adding new roles
+        String[] roles = (String[]) event.getEventProperties().get(IdentityEventConstants.EventProperty.ROLE_LIST);
+        if (roles != null && roles.length > 0) {
+            userData.setNewRoleList(AuditDataPublisherUtils.getCommaSeparatedList(roles));
+        }
 
-        UserData userData = new UserData();
-        userData.setAction(IdentityEventConstants.Event.POST_UPDATE_CREDENTIAL_BY_ADMIN);
-        String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
-        String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        int userTenantId = userStoreManager.getRealmConfiguration().getTenantId();
-        String userTenantDomain = IdentityTenantUtil.getTenantDomain(userTenantId);
-        String userstoreDomain = UserCoreUtil.getDomainName(userStoreManager.getRealmConfiguration());
-        if (StringUtils.isEmpty(userstoreDomain)) {
-            userstoreDomain = UserCoreConstants.PRIMARY_DEFAULT_DOMAIN_NAME;
+        // Adding new claims
+        Map<String, String> claims = (Map<String, String>) event
+                .getEventProperties().get(IdentityEventConstants.EventProperty.CLAIM_VALUE);
+        if (claims != null && !claims.isEmpty()) {
+            userData.setUpdatedClaims(new Gson().toJson(claims));
         }
-        userData.setUserStore(userstoreDomain);
-        userData.setTenantDomain(userTenantDomain);
-        if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)) {
-            userData.setAction(actionHolder + "@" + actionHolderTenantDomain);
-        }
-        userData.setUsername(userName);
-        userData.setCredentials(credential);
-        userData.addParameter(AuditDataPublisherConstants.TENANT_ID, AuditDataPublisherUtils
-                .getTenantDomains(actionHolderTenantDomain, userTenantDomain));
-        doPublishUserData(userData);
+
+        publishUserData(userData);
     }
 
-
-    public void doPublishUserData(UserData userData) {
-
-        Object[] payloadData = new Object[10];
-
+    /**
+     * Publish user related data to IS Analytics.
+     *
+     * @param userData The user data to be published
+     */
+    private void publishUserData(UserData userData) {
+        Object[] payloadData = new Object[11];
         payloadData[0] = userData.getAction();
         payloadData[1] = userData.getUsername();
-        payloadData[2] = userData.getUserStore();
+        payloadData[2] = userData.getUserStoreDomain();
         payloadData[3] = userData.getTenantDomain();
-        payloadData[4] = userData.getNewRoles();
-        payloadData[5] = userData.getDeletedRoles();
-        payloadData[7] = userData.getClaimValues();
+        payloadData[4] = userData.getNewRoleList();
+        payloadData[5] = userData.getDeletedRoleList();
+        payloadData[7] = userData.getUpdatedClaims();
+        payloadData[7] = userData.getDeletedClaims();
         payloadData[8] = userData.getProfile();
         payloadData[9] = userData.getActionHolder();
+        payloadData[10] = userData.getTimestamp();
 
         String[] publishingDomains = (String[]) userData.getParameter(AuditDataPublisherConstants.TENANT_ID);
         if (publishingDomains != null && publishingDomains.length > 0) {
@@ -129,8 +127,8 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
                             (AuditDataPublisherConstants.USER_OPERATION_EVENT_STREAM_NAME, System
                                     .currentTimeMillis(), metadataArray, null, payloadData);
                     UserOperationDataPublisherDataHolder.getInstance().getPublisherService().publish(event);
-                    if (LOG.isDebugEnabled() && event != null) {
-                        LOG.debug("Sending out event : " + event.toString());
+                    if (log.isDebugEnabled()) {
+                        log.debug("Sending out event : " + event.toString());
                     }
                 }
             } finally {
@@ -139,21 +137,47 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         }
     }
 
+    /**
+     * Get the general user related data from event.
+     *
+     * @return General user related data in the event.
+     */
+    private UserData getGeneralUserData(Event event) {
+        UserData userData = new UserData();
+        userData.setTimestamp(System.currentTimeMillis());
+        userData.setAction(event.getEventName());
+        userData.setUsername((String) event.getEventProperties().get(IdentityEventConstants.EventProperty.USER_NAME));
+
+        // Setting the action holder
+        String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
+        if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)) {
+            userData.setAction(actionHolder + "@" + actionHolderTenantDomain);
+        }
+
+        // Setting the tenant domain
+        UserStoreManager userStoreManager = (UserStoreManager) event.getEventProperties()
+                .get(IdentityEventConstants.EventProperty.USER_STORE_MANAGER);
+        int userTenantId = userStoreManager.getRealmConfiguration().getTenantId();
+        String userTenantDomain = IdentityTenantUtil.getTenantDomain(userTenantId);
+        userData.setTenantDomain(userTenantDomain);
+
+        // Setting the user store domain
+        String userStoreDomain = UserCoreUtil.getDomainName(userStoreManager.getRealmConfiguration());
+        if (StringUtils.isEmpty(userStoreDomain)) {
+            userStoreDomain = UserCoreConstants.PRIMARY_DEFAULT_DOMAIN_NAME;
+        }
+        userData.setUserStoreDomain(userStoreDomain);
+
+        // Adding additional properties
+        userData.addParameter(AuditDataPublisherConstants.TENANT_ID,
+                AuditDataPublisherUtils.getTenantDomains(actionHolderTenantDomain, userTenantDomain));
+
+        return userData;
+    }
+
     @Override
     public String getName() {
         return AuditDataPublisherConstants.USER_MGT_DAS_DATA_PUBLISHER;
     }
-
-    private UserStoreManager getUserStoreManager(Event event) {
-        return (UserStoreManager) event.getEventProperties().get(IdentityEventConstants.EventProperty.USER_STORE_MANAGER);
-    }
-
-    private String getUsername(Event event) {
-        return (String) event.getEventProperties().get(IdentityEventConstants.EventProperty.USER_NAME);
-    }
-
-    private String getCredentials(Event event) {
-        return (String) event.getEventProperties().get(IdentityEventConstants.EventProperty.CREDENTIAL);
-    }
-
 }

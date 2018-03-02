@@ -62,6 +62,10 @@
             <groupId>org.wso2.carbon.identity.data.publisher.audit</groupId>
             <artifactId>org.wso2.carbon.identity.data.publisher.audit.common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -70,7 +74,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -103,6 +106,5 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
 

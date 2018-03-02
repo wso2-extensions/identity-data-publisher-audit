@@ -25,28 +25,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserData<T1 extends Object, T2 extends Object> {
-
+    protected Map<T1, T2> parameters = new HashMap<>();
     private String action;
     private String username;
-    private String userStore;
+    private String userStoreDomain;
     private String tenantDomain;
-    private Object credentials;
-    private Object oldCredentials;
-    private Object newCredentials;
-    private String actionHolder;
-    private String claimValues;
-    private String newRoles;
-    private String deletedRoles;
+    private String newRoleList;
+    private String deletedRoleList;
+    private String updatedClaims;
+    private String deletedClaims;
     private String profile;
-    protected Map<T1, T2> parameters = new HashMap<>();
-
-    public String getClaimValues() {
-        return claimValues;
-    }
-
-    public void setClaimValues(String claimValues) {
-        this.claimValues = claimValues;
-    }
+    private String actionHolder;
+    private long timestamp;
 
     public String getAction() {
         return action;
@@ -64,12 +54,12 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.username = username;
     }
 
-    public String getUserStore() {
-        return userStore;
+    public String getUserStoreDomain() {
+        return userStoreDomain;
     }
 
-    public void setUserStore(String userStore) {
-        this.userStore = userStore;
+    public void setUserStoreDomain(String userStoreDomain) {
+        this.userStoreDomain = userStoreDomain;
     }
 
     public String getTenantDomain() {
@@ -80,28 +70,44 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.tenantDomain = tenantDomain;
     }
 
-    public Object getCredentials() {
-        return credentials;
+    public String getNewRoleList() {
+        return newRoleList;
     }
 
-    public void setCredentials(Object credentials) {
-        this.credentials = credentials;
+    public void setNewRoleList(String newRoleList) {
+        this.newRoleList = newRoleList;
     }
 
-    public Object getOldCredentials() {
-        return oldCredentials;
+    public String getDeletedRoleList() {
+        return deletedRoleList;
     }
 
-    public void setOldCredentials(Object oldCredentials) {
-        this.oldCredentials = oldCredentials;
+    public void setDeletedRoleList(String deletedRoleList) {
+        this.deletedRoleList = deletedRoleList;
     }
 
-    public Object getNewCredentials() {
-        return newCredentials;
+    public String getUpdatedClaims() {
+        return updatedClaims;
     }
 
-    public void setNewCredentials(String newCredentials) {
-        this.newCredentials = newCredentials;
+    public void setUpdatedClaims(String updatedClaims) {
+        this.updatedClaims = updatedClaims;
+    }
+
+    public String getDeletedClaims() {
+        return deletedClaims;
+    }
+
+    public void setDeletedClaims(String deletedClaims) {
+        this.deletedClaims = deletedClaims;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 
     public String getActionHolder() {
@@ -112,28 +118,12 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.actionHolder = actionHolder;
     }
 
-    public String getNewRoles() {
-        return newRoles;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public void setNewRoles(String newRoles) {
-        this.newRoles = newRoles;
-    }
-
-    public String getDeletedRoles() {
-        return deletedRoles;
-    }
-
-    public void setDeletedRoles(String deletedRoles) {
-        this.deletedRoles = deletedRoles;
-    }
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public void addParameter(T1 key, T2 value) {
@@ -147,7 +137,8 @@ public class UserData<T1 extends Object, T2 extends Object> {
     public void addParameters(Map<T1, T2> parameters) {
         for (Map.Entry<T1, T2> parameter : parameters.entrySet()) {
             if (this.parameters.containsKey(parameter.getKey())) {
-                throw IdentityRuntimeException.error("Parameters map trying to override existing key " + parameter.getKey());
+                throw IdentityRuntimeException.error("Parameters map trying to override existing key "
+                        + parameter.getKey());
             }
             parameters.put(parameter.getKey(), parameter.getValue());
         }

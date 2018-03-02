@@ -18,11 +18,16 @@
 
 package org.wso2.carbon.identity.data.publisher.audit.common;
 
+/**
+ * Audit data publisher related constants.
+ */
 public class AuditDataPublisherConstants {
-
     public static final String USER_MGT_DAS_DATA_PUBLISHER = "userOperationDataDASPublisher";
     public static final String USER_OPERATION_EVENT_STREAM_NAME = "org.wso2.is.analytics.stream.OverallUserData:1.0.0";
 
     public static final String NOT_AVAILABLE = "NOT_AVAILABLE";
     public static final String TENANT_ID = "TENANT_ID";
+
+    private AuditDataPublisherConstants() {     // Prevent initializing
+    }
 }

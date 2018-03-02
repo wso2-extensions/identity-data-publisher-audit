@@ -19,7 +19,7 @@
       "type": "STRING"
     },
     {
-      "name": "userstoreManager",
+      "name": "userStoreDomain",
       "type": "STRING"
     },
     {
@@ -35,7 +35,11 @@
       "type": "STRING"
     },
     {
-      "name": "claims",
+      "name": "updatedClaims",
+      "type": "STRING"
+    },
+    {
+      "name": "deletedClaims",
       "type": "STRING"
     },
     {
@@ -45,6 +49,10 @@
     {
       "name": "actionHolder",
       "type": "STRING"
+    },
+    {
+      "name": "_timestamp",
+      "type": "LONG"
     }
   ]
 }

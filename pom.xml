@@ -30,15 +30,12 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <name>WSO2 Carbon audit data publisher module</name>
-    <description>
-
-    </description>
+    <description>User operation related data publisher</description>
     <url>http://wso2.org</url>
 
     <scm>
         <url>https://github.com/wso2-extensions/identity-data-publisher-audit.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-audit.git
-        </developerConnection>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-audit.git</developerConnection>
         <connection>scm:git:https://github.com/wso2-extensions/identity-data-publisher-audit.git</connection>
         <tag>HEAD</tag>
     </scm>
@@ -85,6 +82,11 @@
                 <artifactId>org.wso2.carbon.identity.data.publisher.audit.user.operation</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${com.google.code.gson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -110,7 +112,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-
         <repository>
             <id>wso2.snapshots</id>
             <name>Apache Snapshot Repository</name>
@@ -133,7 +134,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-
     </repositories>
 
     <pluginRepositories>
@@ -147,7 +147,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </pluginRepository>
-
         <pluginRepository>
             <id>wso2.snapshots</id>
             <name>WSO2 Snapshot Repository</name>
@@ -178,7 +177,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
-                    <version>1.7.2</version>
+                    <version>${maven.scr.plugin.version}</version>
                     <executions>
                         <execution>
                             <id>generate-scr-scrdescriptor</id>
@@ -191,7 +190,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.4.0</version>
+                    <version>${maven.bundle.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
                         <obrRepository>NONE</obrRepository>
@@ -234,7 +233,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
                     <encoding>UTF-8</encoding>
@@ -267,6 +266,7 @@
         <module>components/org.wso2.carbon.identity.data.publisher.audit.user.operation</module>
         <module>features/org.wso2.carbon.identity.data.publisher.audit.user.operation.server.feature</module>
     </modules>
+
     <properties>
         <carbon.kernel.version>4.4.9</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[4.4.0, 5.0.0)</carbon.kernel.package.import.version.range>
@@ -275,11 +275,15 @@
         <carbon.identity.framework.package.import.version.range>[5.7.0, 6.0.0)</carbon.identity.framework.package.import.version.range>
         <carbon.analytics-common.version>5.1.7</carbon.analytics-common.version>
         <carbon.analytics-common.imp.pkg.version.range>[5.1.0,6.0.0)</carbon.analytics-common.imp.pkg.version.range>
+        <com.google.code.gson.version>2.3.1</com.google.code.gson.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
+        <maven.antrun.plugin.version>1.1</maven.antrun.plugin.version>
+        <maven.compiler.plugin.version>2.3.1</maven.compiler.plugin.version>
+        <maven.bundle.plugin.version>2.4.0</maven.bundle.plugin.version>
+        <maven.scr.plugin.version>1.7.2</maven.scr.plugin.version>
         <maven.buildnumber.plugin.version>1.4</maven.buildnumber.plugin.version>
         <commons-logging.osgi.version.range>[1.2,2.0)</commons-logging.osgi.version.range>
     </properties>
-
 </project>
 
 
