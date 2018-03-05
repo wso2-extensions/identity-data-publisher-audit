@@ -19,8 +19,6 @@
 package org.wso2.carbon.identity.data.publisher.audit.user.operation.internal;
 
 import org.wso2.carbon.event.stream.core.EventStreamService;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * Data holder for user operation data publisher.
@@ -28,8 +26,6 @@ import org.wso2.carbon.user.core.service.RealmService;
 public class UserOperationDataPublisherDataHolder {
     private static UserOperationDataPublisherDataHolder serviceHolder;
     private EventStreamService publisherService;
-    private RealmService realmService;
-    private RegistryService registryService;
 
     private UserOperationDataPublisherDataHolder() {    // Prevent Initializing
     }
@@ -47,21 +43,5 @@ public class UserOperationDataPublisherDataHolder {
 
     public void setPublisherService(EventStreamService publisherService) {
         this.publisherService = publisherService;
-    }
-
-    public RealmService getRealmService() {
-        return realmService;
-    }
-
-    public void setRealmService(RealmService realmService) {
-        this.realmService = realmService;
-    }
-
-    public RegistryService getRegistryService() {
-        return registryService;
-    }
-
-    public void setRegistryService(RegistryService registryService) {
-        this.registryService = registryService;
     }
 }

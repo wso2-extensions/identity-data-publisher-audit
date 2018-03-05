@@ -32,22 +32,22 @@ public class AuditDataPublisherUtils {
     /**
      * Get the tenant domains to publish to based on action holder tenant domain and user tenant domain.
      *
-     * @param spTenantDomain   Action holder tenant domain
-     * @param userTenantDomain User tenant domain
+     * @param actionHolderTenantDomain Action holder tenant domain
+     * @param userTenantDomain         User tenant domain
      * @return The list of tenant domains to publish to
      */
-    public static String[] getTenantDomains(String spTenantDomain, String userTenantDomain) {
+    public static String[] getTenantDomains(String actionHolderTenantDomain, String userTenantDomain) {
         String[] tenantDomains;
         if (StringUtils.isBlank(userTenantDomain) ||
                 userTenantDomain.equalsIgnoreCase(AuditDataPublisherConstants.NOT_AVAILABLE)) {
-            tenantDomains = new String[]{spTenantDomain};
-        } else if (StringUtils.isBlank(spTenantDomain) ||
+            tenantDomains = new String[]{actionHolderTenantDomain};
+        } else if (StringUtils.isBlank(actionHolderTenantDomain) ||
                 userTenantDomain.equalsIgnoreCase(AuditDataPublisherConstants.NOT_AVAILABLE)) {
             tenantDomains = new String[]{userTenantDomain};
-        } else if (spTenantDomain.equalsIgnoreCase(userTenantDomain)) {
+        } else if (actionHolderTenantDomain.equalsIgnoreCase(userTenantDomain)) {
             tenantDomains = new String[]{userTenantDomain};
         } else {
-            tenantDomains = new String[]{userTenantDomain, spTenantDomain};
+            tenantDomains = new String[]{userTenantDomain, actionHolderTenantDomain};
         }
         return tenantDomains;
     }

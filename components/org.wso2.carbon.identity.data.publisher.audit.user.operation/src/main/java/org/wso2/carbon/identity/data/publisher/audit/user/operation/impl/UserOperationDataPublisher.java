@@ -38,6 +38,7 @@ import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,25 +53,19 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
             case IdentityEventConstants.Event.POST_ADD_USER:
                 handleAddUser(event);
                 break;
+            case IdentityEventConstants.Event.POST_DELETE_USER:
+                handleDeleteUser(event);
+                break;
             case IdentityEventConstants.Event.POST_UPDATE_CREDENTIAL:
             case IdentityEventConstants.Event.POST_UPDATE_CREDENTIAL_BY_ADMIN:
                 handleUpdateCredential(event);
                 break;
+            case IdentityEventConstants.Event.POST_SET_USER_CLAIMS:
+                handleSetUserClaims(event);
+                break;
             default:
                 log.debug("Ignored unsupported event " + event.getEventName());
         }
-    }
-
-    /**
-     * Handle credential update related events.
-     * <p>
-     * Handles both POST_UPDATE_CREDENTIAL and POST_UPDATE_CREDENTIAL_BY_ADMIN
-     *
-     * @param event The event related to the credential update
-     */
-    private void handleUpdateCredential(Event event) {
-        UserData userData = getGeneralUserData(event);
-        publishUserData(userData);
     }
 
     /**
@@ -89,11 +84,51 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         }
 
         // Adding new claims
-        Map<String, String> claims = (Map<String, String>) event
-                .getEventProperties().get(IdentityEventConstants.EventProperty.CLAIM_VALUE);
-        if (claims != null && !claims.isEmpty()) {
-            userData.setUpdatedClaims(new Gson().toJson(claims));
+        Map claims = (Map) event.getEventProperties().get(IdentityEventConstants.EventProperty.USER_CLAIMS);
+        if (claims == null) {
+            claims = new HashMap();
         }
+        userData.setClaims(new Gson().toJson(claims));
+
+        publishUserData(userData);
+    }
+
+    /**
+     * Handles POST_DELETE_USER event.
+     *
+     * @param event The event related to the delete user
+     */
+    private void handleDeleteUser(Event event) {
+        UserData userData = getGeneralUserData(event);
+        publishUserData(userData);
+    }
+
+    /**
+     * Handle credential update related events.
+     * <p>
+     * Handles both POST_UPDATE_CREDENTIAL and POST_UPDATE_CREDENTIAL_BY_ADMIN
+     *
+     * @param event The event related to the credential update
+     */
+    private void handleUpdateCredential(Event event) {
+        UserData userData = getGeneralUserData(event);
+        publishUserData(userData);
+    }
+
+    /**
+     * Handles POST_SET_USER_CLAIM and POST_SET_USER_CLAIMS events.
+     *
+     * @param event The event related to the set user claims.
+     */
+    private void handleSetUserClaims(Event event) {
+        UserData userData = getGeneralUserData(event);
+
+        // Adding updated claims
+        Map claims = (Map) event.getEventProperties().get(IdentityEventConstants.EventProperty.USER_CLAIMS);
+        if (claims == null) {
+            claims = new HashMap();
+        }
+        userData.setClaims(new Gson().toJson(claims));
 
         publishUserData(userData);
     }
@@ -104,18 +139,17 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @param userData The user data to be published
      */
     private void publishUserData(UserData userData) {
-        Object[] payloadData = new Object[11];
+        Object[] payloadData = new Object[10];
         payloadData[0] = userData.getAction();
         payloadData[1] = userData.getUsername();
         payloadData[2] = userData.getUserStoreDomain();
         payloadData[3] = userData.getTenantDomain();
         payloadData[4] = userData.getNewRoleList();
         payloadData[5] = userData.getDeletedRoleList();
-        payloadData[7] = userData.getUpdatedClaims();
-        payloadData[7] = userData.getDeletedClaims();
-        payloadData[8] = userData.getProfile();
-        payloadData[9] = userData.getActionHolder();
-        payloadData[10] = userData.getTimestamp();
+        payloadData[6] = userData.getClaims();
+        payloadData[7] = userData.getProfile();
+        payloadData[8] = userData.getActionHolder();
+        payloadData[9] = userData.getActionTimestamp();
 
         String[] publishingDomains = (String[]) userData.getParameter(AuditDataPublisherConstants.TENANT_ID);
         if (publishingDomains != null && publishingDomains.length > 0) {
@@ -144,7 +178,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      */
     private UserData getGeneralUserData(Event event) {
         UserData userData = new UserData();
-        userData.setTimestamp(System.currentTimeMillis());
+        userData.setActionTimestamp(System.currentTimeMillis());
         userData.setAction(event.getEventName());
         userData.setUsername((String) event.getEventProperties().get(IdentityEventConstants.EventProperty.USER_NAME));
 
@@ -152,7 +186,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
         if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)) {
-            userData.setAction(actionHolder + "@" + actionHolderTenantDomain);
+            userData.setActionHolder(actionHolder + "@" + actionHolderTenantDomain);
         }
 
         // Setting the tenant domain

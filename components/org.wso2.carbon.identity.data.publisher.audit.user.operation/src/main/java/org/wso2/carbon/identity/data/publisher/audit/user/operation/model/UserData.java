@@ -24,19 +24,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * POJO for storing user operation related data.
+ *
+ * @param <T1> The key type for the properties map
+ * @param <T2> The value type for the properties map
+ */
 public class UserData<T1 extends Object, T2 extends Object> {
-    protected Map<T1, T2> parameters = new HashMap<>();
     private String action;
     private String username;
     private String userStoreDomain;
     private String tenantDomain;
     private String newRoleList;
     private String deletedRoleList;
-    private String updatedClaims;
-    private String deletedClaims;
+    private String claims;
     private String profile;
     private String actionHolder;
-    private long timestamp;
+    private long actionTimestamp;
+    private Map<T1, T2> parameters = new HashMap<>();
 
     public String getAction() {
         return action;
@@ -86,20 +91,12 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.deletedRoleList = deletedRoleList;
     }
 
-    public String getUpdatedClaims() {
-        return updatedClaims;
+    public String getClaims() {
+        return claims;
     }
 
-    public void setUpdatedClaims(String updatedClaims) {
-        this.updatedClaims = updatedClaims;
-    }
-
-    public String getDeletedClaims() {
-        return deletedClaims;
-    }
-
-    public void setDeletedClaims(String deletedClaims) {
-        this.deletedClaims = deletedClaims;
+    public void setClaims(String claims) {
+        this.claims = claims;
     }
 
     public String getProfile() {
@@ -118,12 +115,12 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.actionHolder = actionHolder;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getActionTimestamp() {
+        return actionTimestamp;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setActionTimestamp(long actionTimestamp) {
+        this.actionTimestamp = actionTimestamp;
     }
 
     public void addParameter(T1 key, T2 value) {

@@ -21,29 +21,24 @@ package org.wso2.carbon.identity.data.publisher.audit.user.operation.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.event.stream.core.EventStreamService;
 import org.wso2.carbon.identity.data.publisher.audit.user.operation.impl.UserOperationDataPublisher;
 import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.user.core.service.RealmService;
 
-/**
- * @scr.component name="org.wso2.carbon.identity.data.publisher.audit" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService"
- * unbind="unsetRegistryService"
- * @scr.reference name="realm.service" interface="org.wso2.carbon.user.core.service.RealmService"
- * cardinality="1..1" policy="dynamic" bind="setRealmService"
- * unbind="unsetRealmService"
- * @scr.reference name="eventStreamManager.service"
- * interface="org.wso2.carbon.event.stream.core.EventStreamService" cardinality="1..1"
- * policy="dynamic" bind="setEventStreamService" unbind="unsetEventStreamService"
- * unbind="unsetEventStreamService"
- */
+@Component(
+        name = "org.wso2.carbon.identity.data.publisher.audit",
+        immediate = true
+)
 public class UserOperationDataPublisherServiceComponent {
     private static Log log = LogFactory.getLog(UserOperationDataPublisherServiceComponent.class);
 
+    @Activate
     protected void activate(ComponentContext context) {
         try {
             UserOperationDataPublisher handler = new UserOperationDataPublisher();
@@ -53,33 +48,25 @@ public class UserOperationDataPublisherServiceComponent {
         }
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext ctxt) {
         if (log.isDebugEnabled()) {
             log.debug("UserOperationDataPublisher is deactivated");
         }
     }
 
+    @Reference(
+            name = "eventStreamManager.service",
+            service = org.wso2.carbon.event.stream.core.EventStreamService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetEventStreamService"
+    )
     protected void setEventStreamService(EventStreamService publisherService) {
         UserOperationDataPublisherDataHolder.getInstance().setPublisherService(publisherService);
     }
 
     protected void unsetEventStreamService(EventStreamService publisherService) {
         UserOperationDataPublisherDataHolder.getInstance().setPublisherService(null);
-    }
-
-    protected void setRealmService(RealmService realmService) {
-        UserOperationDataPublisherDataHolder.getInstance().setRealmService(realmService);
-    }
-
-    protected void unsetRealmService(RealmService realmService) {
-        UserOperationDataPublisherDataHolder.getInstance().setRealmService(null);
-    }
-
-    protected void setRegistryService(RegistryService registryService) {
-        UserOperationDataPublisherDataHolder.getInstance().setRegistryService(registryService);
-    }
-
-    protected void unsetRegistryService(RegistryService registryService) {
-        UserOperationDataPublisherDataHolder.getInstance().setRegistryService(null);
     }
 }

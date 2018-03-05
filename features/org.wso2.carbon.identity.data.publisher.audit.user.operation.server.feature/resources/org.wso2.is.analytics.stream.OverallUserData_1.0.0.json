@@ -35,11 +35,7 @@
       "type": "STRING"
     },
     {
-      "name": "updatedClaims",
-      "type": "STRING"
-    },
-    {
-      "name": "deletedClaims",
+      "name": "claims",
       "type": "STRING"
     },
     {
@@ -51,7 +47,7 @@
       "type": "STRING"
     },
     {
-      "name": "_timestamp",
+      "name": "actionTimestamp",
       "type": "LONG"
     }
   ]
