@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.data.publisher.audit.user.operation.internal;
+package org.wso2.carbon.identity.data.publisher.audit.idp.properties.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,31 +28,31 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.event.stream.core.EventStreamService;
-import org.wso2.carbon.identity.data.publisher.audit.user.operation.impl.UserOperationDataPublisher;
-import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
+import org.wso2.carbon.identity.data.publisher.audit.idp.properties.impl.ResidentIdPPropertiesDataPublisher;
+import org.wso2.carbon.idp.mgt.listener.IdentityProviderMgtListener;
 
 @Component(
-        name = "org.wso2.carbon.identity.data.publisher.audit.user.operation",
+        name = "org.wso2.carbon.identity.data.publisher.audit.idp.properties",
         immediate = true
 )
-public class UserOperationDataPublisherServiceComponent {
-    private static Log log = LogFactory.getLog(UserOperationDataPublisherServiceComponent.class);
+public class IdPPropertiesDataPublisherServiceComponent {
+    private static Log log = LogFactory.getLog(IdPPropertiesDataPublisherServiceComponent.class);
 
     @Activate
     protected void activate(ComponentContext context) {
         try {
-            UserOperationDataPublisher handler = new UserOperationDataPublisher();
-            context.getBundleContext().registerService(AbstractEventHandler.class.getName(), handler, null);
+            ResidentIdPPropertiesDataPublisher publisher = new ResidentIdPPropertiesDataPublisher();
+            context.getBundleContext().registerService(IdentityProviderMgtListener.class.getName(), publisher, null);
         } catch (Throwable e) {
-            log.fatal("Error while activating the UserOperationDataPublisher. " +
-                    "User operation audit events will not be published to IS Analytics", e);
+            log.fatal("Error while activating the ResidentIdPPropertiesDataPublisher. " +
+                    "IdP properties audit events will not be published to IS Analytics", e);
         }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext ctxt) {
         if (log.isDebugEnabled()) {
-            log.debug("UserOperationDataPublisher is deactivated");
+            log.debug("ResidentIdPPropertiesDataPublisher is deactivated");
         }
     }
 
@@ -64,10 +64,10 @@ public class UserOperationDataPublisherServiceComponent {
             unbind = "unsetEventStreamService"
     )
     protected void setEventStreamService(EventStreamService publisherService) {
-        UserOperationDataPublisherDataHolder.getInstance().setPublisherService(publisherService);
+        IdPPropertiesDataPublisherDataHolder.getInstance().setPublisherService(publisherService);
     }
 
     protected void unsetEventStreamService(EventStreamService publisherService) {
-        UserOperationDataPublisherDataHolder.getInstance().setPublisherService(null);
+        IdPPropertiesDataPublisherDataHolder.getInstance().setPublisherService(null);
     }
 }

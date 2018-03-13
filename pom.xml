@@ -29,7 +29,7 @@
     <version>1.0.3-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon audit data publisher module</name>
+    <name>WSO2 Carbon Identity Audit Data Publishers</name>
     <description>User operation related data publisher</description>
     <url>http://wso2.org</url>
 
@@ -42,12 +42,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
-                <version>${org.apache.felix.scr.ds-annotations.version}</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.framework</groupId>
                 <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
@@ -92,6 +86,11 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${com.google.code.gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+                <version>${org.apache.felix.scr.ds.annotations.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -209,6 +208,19 @@
                         <doUpdate>false</doUpdate>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-scr-plugin</artifactId>
+                    <version>${maven.scr.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>generate-scr-scrdescriptor</id>
+                            <goals>
+                                <goal>scr</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -257,7 +269,9 @@
     <modules>
         <module>components/org.wso2.carbon.identity.data.publisher.audit.common</module>
         <module>components/org.wso2.carbon.identity.data.publisher.audit.user.operation</module>
+        <module>components/org.wso2.carbon.identity.data.publisher.audit.idp.properties</module>
         <module>features/org.wso2.carbon.identity.data.publisher.audit.user.operation.server.feature</module>
+        <module>features/org.wso2.carbon.identity.data.publisher.audit.idp.properties.server.feature</module>
     </modules>
 
     <properties>
@@ -273,8 +287,9 @@
         <maven.antrun.plugin.version>1.1</maven.antrun.plugin.version>
         <maven.compiler.plugin.version>2.3.1</maven.compiler.plugin.version>
         <maven.bundle.plugin.version>2.4.0</maven.bundle.plugin.version>
-        <org.apache.felix.scr.ds-annotations.version>1.2.8</org.apache.felix.scr.ds-annotations.version>
         <maven.buildnumber.plugin.version>1.4</maven.buildnumber.plugin.version>
+        <maven.scr.plugin.version>1.24.0</maven.scr.plugin.version>
+        <org.apache.felix.scr.ds.annotations.version>1.2.8</org.apache.felix.scr.ds.annotations.version>
         <commons-logging.osgi.version.range>[1.2,2.0)</commons-logging.osgi.version.range>
     </properties>
 </project>

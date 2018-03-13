@@ -33,6 +33,7 @@ import org.wso2.carbon.identity.event.IdentityEventConstants;
 import org.wso2.carbon.identity.event.IdentityEventException;
 import org.wso2.carbon.identity.event.event.Event;
 import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
@@ -64,7 +65,9 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
                 handleSetUserClaims(event);
                 break;
             default:
-                log.debug("Ignored unsupported event " + event.getEventName());
+                if (log.isDebugEnabled()) {
+                    log.debug("Ignored unsupported event " + event.getEventName());
+                }
         }
     }
 
@@ -151,14 +154,14 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         payloadData[8] = userData.getActionHolder();
         payloadData[9] = userData.getActionTimestamp();
 
-        String[] publishingDomains = (String[]) userData.getParameter(AuditDataPublisherConstants.TENANT_ID);
+        String[] publishingDomains = (String[]) userData.getParameter(AuditDataPublisherConstants.PUBLISHING_TENANT_DOMAINS);
         if (publishingDomains != null && publishingDomains.length > 0) {
             try {
                 FrameworkUtils.startTenantFlow(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
                 for (String publishingDomain : publishingDomains) {
                     Object[] metadataArray = AuditDataPublisherUtils.getMetaDataArray(publishingDomain);
                     org.wso2.carbon.databridge.commons.Event event = new org.wso2.carbon.databridge.commons.Event
-                            (AuditDataPublisherConstants.USER_OPERATION_EVENT_STREAM_NAME, System
+                            (AuditDataPublisherConstants.OVERALL_USER_DATA_EVENT_STREAM_NAME, System
                                     .currentTimeMillis(), metadataArray, null, payloadData);
                     UserOperationDataPublisherDataHolder.getInstance().getPublisherService().publish(event);
                     if (log.isDebugEnabled()) {
@@ -185,8 +188,16 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         // Setting the action holder
         String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)) {
-            userData.setActionHolder(actionHolder + "@" + actionHolderTenantDomain);
+        try {
+            String actionHolderUserStoreDomain = UserCoreUtil.getDomainName(
+                    CarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration());
+            if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)
+                    && StringUtils.isNotBlank(actionHolderUserStoreDomain)) {
+                userData.setActionHolder(actionHolderUserStoreDomain + "/" + actionHolder
+                        + "@" + actionHolderTenantDomain);
+            }
+        } catch (UserStoreException e) {
+            log.error("Failed to fetch action holder user store domain for user " + actionHolder);
         }
 
         // Setting the tenant domain
@@ -204,7 +215,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         userData.setUserStoreDomain(userStoreDomain);
 
         // Adding additional properties
-        userData.addParameter(AuditDataPublisherConstants.TENANT_ID,
+        userData.addParameter(AuditDataPublisherConstants.PUBLISHING_TENANT_DOMAINS,
                 AuditDataPublisherUtils.getTenantDomains(actionHolderTenantDomain, userTenantDomain));
 
         return userData;

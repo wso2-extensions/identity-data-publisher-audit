@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~ Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
   ~
   ~ WSO2 Inc. licenses this file to you under the Apache License,
   ~ Version 2.0 (the "License"); you may not use this file except
@@ -17,21 +17,22 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.identity.data.publisher.audit</groupId>
         <artifactId>identity-data-publisher-audit</artifactId>
-        <relativePath>../../pom.xml</relativePath>
         <version>1.0.3-SNAPSHOT</version>
+        <relativePath>../..</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.identity.data.publisher.audit.user.operation</artifactId>
+    <artifactId>org.wso2.carbon.identity.data.publisher.audit.idp.properties</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Identity Audit User Operation Data Publisher</name>
-    <description>Carbon - Audit Data Publisher - User Operations</description>
-    <url>http://wso2.org</url>
+    <name>WSO2 Carbon Identity Audit IdP Properties Update Data Publisher</name>
+    <description>Carbon - Audit Data Publisher - Identity Provider Property Updates</description>
 
     <dependencies>
         <dependency>
@@ -52,19 +53,15 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.framework</groupId>
-            <artifactId>org.wso2.carbon.identity.event</artifactId>
+            <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.framework</groupId>
-            <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.data.publisher.audit</groupId>
             <artifactId>org.wso2.carbon.identity.data.publisher.audit.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -87,23 +84,19 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>
-                            org.wso2.carbon.identity.data.publisher.audit.user.operation.internal,
+                            org.wso2.carbon.identity.data.publisher.audit.idp.properties.internal,
                         </Private-Package>
                         <Import-Package>
-                            !org.wso2.carbon.identity.data.publisher.audit.user.operation.*,
+                            !org.wso2.carbon.identity.data.publisher.audit.idp.properties.*,
                             org.wso2.carbon; version="${carbon.kernel.package.import.version.range}",
-                            org.wso2.carbon.identity.application.authentication.framework.*;version="${identity.framework.version}",
                             org.apache.commons.logging; version="${commons-logging.osgi.version.range}",
-                            org.wso2.carbon.identity.application.authentication.framework.*;version="${carbon.identity.framework.package.import.version.range}",
-                            org.wso2.carbon.identity.event.*;version="${carbon.identity.framework.package.import.version.range}",
+                            org.wso2.carbon.identity.idp.properties.framework.*;version="${carbon.identity.framework.package.import.version.range}",
                             org.wso2.carbon.databridge.commons; version="${carbon.analytics-common.version}",
-                            org.wso2.carbon.identity.data.publisher.audit.*;
-                            version="${project.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Export-Package>
-                            !org.wso2.carbon.identity.data.publisher.audit.user.operation.internal,
-                            org.wso2.carbon.identity.data.publisher.audit.user.operation.*;version="${carbon.identity.data.publisher.package.export.version}"
+                            !org.wso2.carbon.identity.data.publisher.audit.idp.properties.internal,
+                            org.wso2.carbon.identity.data.publisher.audit.idp.properties.*;version="${carbon.identity.data.publisher.package.export.version}"
                         </Export-Package>
                     </instructions>
                 </configuration>
@@ -111,4 +104,3 @@
         </plugins>
     </build>
 </project>
-
