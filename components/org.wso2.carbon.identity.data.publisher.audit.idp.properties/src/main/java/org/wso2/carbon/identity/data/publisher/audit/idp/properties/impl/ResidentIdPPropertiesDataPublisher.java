@@ -35,8 +35,6 @@ import org.wso2.carbon.identity.data.publisher.audit.idp.properties.model.IdPPro
 import org.wso2.carbon.idp.mgt.IdentityProviderManagementException;
 import org.wso2.carbon.idp.mgt.listener.AbstractIdentityProviderMgtListener;
 import org.wso2.carbon.idp.mgt.listener.IdentityProviderMgtListener;
-import org.wso2.carbon.user.api.UserStoreException;
-import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.HashMap;
@@ -51,12 +49,14 @@ public class ResidentIdPPropertiesDataPublisher extends AbstractIdentityProvider
     @Override
     public boolean doPostUpdateResidentIdP(IdentityProvider identityProvider, String tenantDomain)
             throws IdentityProviderManagementException {
+
         return handlePostIdPPropertyChange(identityProvider, tenantDomain);
     }
 
     @Override
     public boolean doPostAddResidentIdP(IdentityProvider identityProvider, String tenantDomain)
             throws IdentityProviderManagementException {
+
         return handlePostIdPPropertyChange(identityProvider, tenantDomain);
     }
 
@@ -70,6 +70,7 @@ public class ResidentIdPPropertiesDataPublisher extends AbstractIdentityProvider
      */
     public boolean handlePostIdPPropertyChange(IdentityProvider identityProvider, String tenantDomain)
             throws IdentityProviderManagementException {
+
         IdPProperties idPProperties = new IdPProperties();
         idPProperties.setIdPName(identityProvider.getIdentityProviderName());
         idPProperties.setTenantDomain(tenantDomain);
@@ -85,17 +86,7 @@ public class ResidentIdPPropertiesDataPublisher extends AbstractIdentityProvider
         // Setting the action holder
         String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        try {
-            String actionHolderUserStoreDomain = UserCoreUtil.getDomainName(
-                    CarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration());
-            if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)
-                    && StringUtils.isNotBlank(actionHolderUserStoreDomain)) {
-                idPProperties.setActionHolder(actionHolderUserStoreDomain + "/" + actionHolder
-                        + "@" + actionHolderTenantDomain);
-            }
-        } catch (UserStoreException e) {
-            log.error("Failed to fetch action holder user store domain for user " + actionHolder);
-        }
+        idPProperties.setActionHolder(AuditDataPublisherUtils.getActionHolder(actionHolder, actionHolderTenantDomain));
 
         idPProperties.addParameter(AuditDataPublisherConstants.PUBLISHING_TENANT_DOMAINS,
                 AuditDataPublisherUtils.getTenantDomains(actionHolderTenantDomain, tenantDomain));
@@ -110,6 +101,7 @@ public class ResidentIdPPropertiesDataPublisher extends AbstractIdentityProvider
      * @param idPProperties The IdP properties to be published.
      */
     private void publishResidentIdPData(IdPProperties idPProperties) {
+
         Object[] payloadData = new Object[5];
         payloadData[0] = idPProperties.getIdPName();
         payloadData[1] = idPProperties.getTenantDomain();
@@ -140,7 +132,8 @@ public class ResidentIdPPropertiesDataPublisher extends AbstractIdentityProvider
 
     @Override
     public boolean isEnable() {
-        // Extended to change the default behaviour to not publish data is the config is missing
+
+        // Extended to change the default behaviour to not publish data if the config is missing
         IdentityEventListenerConfig identityEventListenerConfig = IdentityUtil.readEventListenerProperty(
                 IdentityProviderMgtListener.class.getName(), this.getClass().getName());
         return identityEventListenerConfig != null
@@ -150,6 +143,7 @@ public class ResidentIdPPropertiesDataPublisher extends AbstractIdentityProvider
 
     @Override
     public int getDefaultOrderId() {
+
         return AuditDataPublisherConstants.IDP_MGT_LISTENER_DEFAULT_ORDER_ID;
     }
 }

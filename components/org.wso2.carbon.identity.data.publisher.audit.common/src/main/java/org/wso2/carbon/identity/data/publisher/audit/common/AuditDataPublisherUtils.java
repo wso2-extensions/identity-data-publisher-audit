@@ -19,37 +19,80 @@
 package org.wso2.carbon.identity.data.publisher.audit.common;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.core.util.UserCoreUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Audit data publisher related utilities.
  */
 public class AuditDataPublisherUtils {
+    private static final Log log = LogFactory.getLog(AuditDataPublisherUtils.class);
+
     private AuditDataPublisherUtils() {     // Prevent initializing
     }
 
     /**
      * Get the tenant domains to publish to based on action holder tenant domain and user tenant domain.
+     * The array of tenant domains that are returned by this method are the tenant domains which are relevant
+     * for the data publishing.
      *
      * @param actionHolderTenantDomain Action holder tenant domain
      * @param userTenantDomain         User tenant domain
      * @return The list of tenant domains to publish to
      */
     public static String[] getTenantDomains(String actionHolderTenantDomain, String userTenantDomain) {
-        String[] tenantDomains;
-        if (StringUtils.isBlank(userTenantDomain) ||
-                userTenantDomain.equalsIgnoreCase(AuditDataPublisherConstants.NOT_AVAILABLE)) {
-            tenantDomains = new String[]{actionHolderTenantDomain};
-        } else if (StringUtils.isBlank(actionHolderTenantDomain) ||
-                userTenantDomain.equalsIgnoreCase(AuditDataPublisherConstants.NOT_AVAILABLE)) {
-            tenantDomains = new String[]{userTenantDomain};
-        } else if (actionHolderTenantDomain.equalsIgnoreCase(userTenantDomain)) {
-            tenantDomains = new String[]{userTenantDomain};
-        } else {
-            tenantDomains = new String[]{userTenantDomain, actionHolderTenantDomain};
+
+        List<String> tenantDomain = new ArrayList<>(2);
+        if (isTenantDomainNotBlank(userTenantDomain)) {
+            tenantDomain.add(userTenantDomain);
         }
-        return tenantDomains;
+        if (isTenantDomainNotBlank(actionHolderTenantDomain)) {
+            tenantDomain.add(userTenantDomain);
+        }
+        return (String[]) tenantDomain.toArray();
+    }
+
+    /**
+     * Get the fully qualified action holder (userStoreDomain/user@tenantdomain).
+     *
+     * @param actionHolder             Username of the action holder
+     * @param actionHolderTenantDomain The tenant domain of the action holder
+     * @return The action holder
+     */
+    public static String getActionHolder(String actionHolder, String actionHolderTenantDomain) {
+        String fullyQualifiedActionHolderName = null;
+        try {
+            String actionHolderUserStoreDomain = UserCoreUtil.getDomainName(
+                    CarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration());
+            if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)
+                    && StringUtils.isNotBlank(actionHolderUserStoreDomain)) {
+                fullyQualifiedActionHolderName = actionHolderUserStoreDomain + "/" + actionHolder
+                        + "@" + actionHolderTenantDomain;
+            }
+        } catch (UserStoreException e) {
+            log.error("Failed to fetch action holder user store domain for user " + actionHolder);
+        }
+        return fullyQualifiedActionHolderName;
+    }
+
+    /**
+     * Check if a tenant domain is blank.
+     *
+     * @param tenantDomain The tenant domain to validate
+     * @return True if the tenant domain is blank
+     */
+    private static boolean isTenantDomainNotBlank(String tenantDomain) {
+
+        return !StringUtils.isBlank(tenantDomain)
+                && !tenantDomain.equalsIgnoreCase(AuditDataPublisherConstants.NOT_AVAILABLE);
     }
 
     /**
@@ -59,6 +102,7 @@ public class AuditDataPublisherUtils {
      * @return The meta data array for the tenant
      */
     public static Object[] getMetaDataArray(String tenantDomain) {
+
         Object[] metaData = new Object[1];
         if (StringUtils.isBlank(tenantDomain)) {
             metaData[0] = MultitenantConstants.SUPER_TENANT_ID;
@@ -75,13 +119,13 @@ public class AuditDataPublisherUtils {
      * @return The string of comma separated values
      */
     public static String getCommaSeparatedList(String[] values) {
+
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < values.length; i++) {
             stringBuilder.append(values[i]);
             if (i < values.length - 1) {
                 stringBuilder.append(",");
             }
-
         }
         return stringBuilder.toString();
     }

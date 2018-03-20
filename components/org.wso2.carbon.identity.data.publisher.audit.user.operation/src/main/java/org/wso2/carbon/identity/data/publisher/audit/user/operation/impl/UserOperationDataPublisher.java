@@ -33,7 +33,6 @@ import org.wso2.carbon.identity.event.IdentityEventConstants;
 import org.wso2.carbon.identity.event.IdentityEventException;
 import org.wso2.carbon.identity.event.event.Event;
 import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
-import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
@@ -50,6 +49,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
 
     @Override
     public void handleEvent(Event event) throws IdentityEventException {
+
         switch (event.getEventName()) {
             case IdentityEventConstants.Event.POST_ADD_USER:
                 handleAddUser(event);
@@ -77,6 +77,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @param event The event related to the add user
      */
     private void handleAddUser(Event event) {
+
         UserData userData = getGeneralUserData(event);
         userData.setProfile((String) event.getEventProperties().get(IdentityEventConstants.EventProperty.PROFILE_NAME));
 
@@ -102,6 +103,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @param event The event related to the delete user
      */
     private void handleDeleteUser(Event event) {
+
         UserData userData = getGeneralUserData(event);
         publishUserData(userData);
     }
@@ -114,6 +116,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @param event The event related to the credential update
      */
     private void handleUpdateCredential(Event event) {
+
         UserData userData = getGeneralUserData(event);
         publishUserData(userData);
     }
@@ -124,6 +127,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @param event The event related to the set user claims.
      */
     private void handleSetUserClaims(Event event) {
+
         UserData userData = getGeneralUserData(event);
 
         // Adding updated claims
@@ -142,6 +146,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @param userData The user data to be published
      */
     private void publishUserData(UserData userData) {
+
         Object[] payloadData = new Object[10];
         payloadData[0] = userData.getAction();
         payloadData[1] = userData.getUsername();
@@ -180,6 +185,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
      * @return General user related data in the event.
      */
     private UserData getGeneralUserData(Event event) {
+
         UserData userData = new UserData();
         userData.setActionTimestamp(System.currentTimeMillis());
         userData.setAction(event.getEventName());
@@ -188,17 +194,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
         // Setting the action holder
         String actionHolderTenantDomain = CarbonContext.getThreadLocalCarbonContext().getTenantDomain();
         String actionHolder = CarbonContext.getThreadLocalCarbonContext().getUsername();
-        try {
-            String actionHolderUserStoreDomain = UserCoreUtil.getDomainName(
-                    CarbonContext.getThreadLocalCarbonContext().getUserRealm().getRealmConfiguration());
-            if (StringUtils.isNotBlank(actionHolder) && StringUtils.isNotBlank(actionHolderTenantDomain)
-                    && StringUtils.isNotBlank(actionHolderUserStoreDomain)) {
-                userData.setActionHolder(actionHolderUserStoreDomain + "/" + actionHolder
-                        + "@" + actionHolderTenantDomain);
-            }
-        } catch (UserStoreException e) {
-            log.error("Failed to fetch action holder user store domain for user " + actionHolder);
-        }
+        userData.setActionHolder(AuditDataPublisherUtils.getActionHolder(actionHolder, actionHolderTenantDomain));
 
         // Setting the tenant domain
         UserStoreManager userStoreManager = (UserStoreManager) event.getEventProperties()
@@ -223,6 +219,7 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
 
     @Override
     public String getName() {
+
         return AuditDataPublisherConstants.USER_MGT_DAS_DATA_PUBLISHER;
     }
 }
