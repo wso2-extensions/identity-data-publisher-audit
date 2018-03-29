@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.data.publisher.audit.user.operation.model;
+package org.wso2.carbon.identity.data.publisher.audit.idp.properties.model;
 
 import org.wso2.carbon.identity.base.IdentityRuntimeException;
 
@@ -25,46 +25,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * POJO for storing user operation related data.
- *
- * @param <T1> The key type for the properties map
- * @param <T2> The value type for the properties map
+ * POJO for storing IdP properties.
  */
-public class UserData<T1 extends Object, T2 extends Object> {
-    private String action;
-    private String username;
-    private String userStoreDomain;
+public class IdPProperties<T1 extends Object, T2 extends Object> {
+    private String idPName;
     private String tenantDomain;
-    private String newRoleList;
-    private String deletedRoleList;
-    private String claims;
-    private String profile;
+    private Map<String, String> properties;
     private String actionHolder;
-    private long actionTimestamp;
+    private long timestamp;
     private Map<T1, T2> parameters = new HashMap<>();
 
-    public String getAction() {
-        return action;
+    public String getIdPName() {
+        return idPName;
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUserStoreDomain() {
-        return userStoreDomain;
-    }
-
-    public void setUserStoreDomain(String userStoreDomain) {
-        this.userStoreDomain = userStoreDomain;
+    public void setIdPName(String idPName) {
+        this.idPName = idPName;
     }
 
     public String getTenantDomain() {
@@ -75,36 +51,12 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.tenantDomain = tenantDomain;
     }
 
-    public String getNewRoleList() {
-        return newRoleList;
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
-    public void setNewRoleList(String newRoleList) {
-        this.newRoleList = newRoleList;
-    }
-
-    public String getDeletedRoleList() {
-        return deletedRoleList;
-    }
-
-    public void setDeletedRoleList(String deletedRoleList) {
-        this.deletedRoleList = deletedRoleList;
-    }
-
-    public String getClaims() {
-        return claims;
-    }
-
-    public void setClaims(String claims) {
-        this.claims = claims;
-    }
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
     public String getActionHolder() {
@@ -115,12 +67,12 @@ public class UserData<T1 extends Object, T2 extends Object> {
         this.actionHolder = actionHolder;
     }
 
-    public long getActionTimestamp() {
-        return actionTimestamp;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public void setActionTimestamp(long actionTimestamp) {
-        this.actionTimestamp = actionTimestamp;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public void addParameter(T1 key, T2 value) {
@@ -148,5 +100,4 @@ public class UserData<T1 extends Object, T2 extends Object> {
     public T2 getParameter(T1 key) {
         return parameters.get(key);
     }
-
 }

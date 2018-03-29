@@ -1,5 +1,5 @@
 {
-  "name": "org.wso2.is.analytics.stream.OverallUserData",
+  "name": "org.wso2.is.analytics.stream.IdPPropertiesUpdate",
   "version": "1.0.0",
   "nickName": "",
   "description": "",
@@ -11,15 +11,7 @@
   ],
   "payloadData": [
     {
-      "name": "action",
-      "type": "STRING"
-    },
-    {
-      "name": "username",
-      "type": "STRING"
-    },
-    {
-      "name": "userStoreDomain",
+      "name": "idPName",
       "type": "STRING"
     },
     {
@@ -27,19 +19,7 @@
       "type": "STRING"
     },
     {
-      "name": "newRoleList",
-      "type": "STRING"
-    },
-    {
-      "name": "deletedRoleList",
-      "type": "STRING"
-    },
-    {
-      "name": "claims",
-      "type": "STRING"
-    },
-    {
-      "name": "profile",
+      "name": "idPProperties",
       "type": "STRING"
     },
     {

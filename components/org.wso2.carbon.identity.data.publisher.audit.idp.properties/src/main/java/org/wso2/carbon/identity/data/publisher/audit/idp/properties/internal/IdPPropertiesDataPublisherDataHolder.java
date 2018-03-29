@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,23 +16,23 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.data.publisher.audit.user.operation.internal;
+package org.wso2.carbon.identity.data.publisher.audit.idp.properties.internal;
 
 import org.wso2.carbon.event.stream.core.EventStreamService;
 
 /**
- * Data holder for user operation data publisher.
+ * Data holder for the IdP Data Publisher.
  */
-public class UserOperationDataPublisherDataHolder {
-    private static UserOperationDataPublisherDataHolder serviceHolder;
+public class IdPPropertiesDataPublisherDataHolder {
+    private static IdPPropertiesDataPublisherDataHolder serviceHolder;
     private EventStreamService publisherService;
 
-    private UserOperationDataPublisherDataHolder() {    // Prevent Initializing
+    private IdPPropertiesDataPublisherDataHolder() {    // Prevent Initializing
     }
 
-    public static UserOperationDataPublisherDataHolder getInstance() {
+    public static IdPPropertiesDataPublisherDataHolder getInstance() {
         if (serviceHolder == null) {
-            serviceHolder = new UserOperationDataPublisherDataHolder();
+            serviceHolder = new IdPPropertiesDataPublisherDataHolder();
         }
         return serviceHolder;
     }
