@@ -57,7 +57,9 @@ public class AuditDataPublisherUtils {
         if (isTenantDomainNotBlank(actionHolderTenantDomain)) {
             tenantDomain.add(userTenantDomain);
         }
-        return (String[]) tenantDomain.toArray();
+
+        return tenantDomain.toArray(new String[0]);
+
     }
 
     /**
