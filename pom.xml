@@ -275,13 +275,13 @@
     </modules>
 
     <properties>
-        <carbon.kernel.version>4.4.9</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[4.4.0, 5.0.0)</carbon.kernel.package.import.version.range>
-        <identity.framework.version>5.7.0</identity.framework.version>
+        <carbon.kernel.version>4.5.0-m1</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[4.5.0, 5.0.0)</carbon.kernel.package.import.version.range>
+        <identity.framework.version>5.13.5</identity.framework.version>
         <carbon.identity.data.publisher.package.export.version>${project.version}</carbon.identity.data.publisher.package.export.version>
-        <carbon.identity.framework.package.import.version.range>[5.7.0, 6.0.0)</carbon.identity.framework.package.import.version.range>
-        <carbon.analytics-common.version>5.1.7</carbon.analytics-common.version>
-        <carbon.analytics-common.imp.pkg.version.range>[5.1.0,6.0.0)</carbon.analytics-common.imp.pkg.version.range>
+        <carbon.identity.framework.package.import.version.range>[5.13.0, 6.0.0)</carbon.identity.framework.package.import.version.range>
+        <carbon.analytics-common.version>5.2.1</carbon.analytics-common.version>
+        <carbon.analytics-common.imp.pkg.version.range>[5.2.0,6.0.0)</carbon.analytics-common.imp.pkg.version.range>
         <com.google.code.gson.version>2.3.1</com.google.code.gson.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <maven.antrun.plugin.version>1.1</maven.antrun.plugin.version>
