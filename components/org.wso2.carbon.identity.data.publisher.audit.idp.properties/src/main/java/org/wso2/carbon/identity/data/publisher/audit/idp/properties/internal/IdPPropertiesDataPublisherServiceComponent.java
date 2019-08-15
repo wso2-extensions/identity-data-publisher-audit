@@ -36,7 +36,7 @@ import org.wso2.carbon.idp.mgt.listener.IdentityProviderMgtListener;
         immediate = true
 )
 public class IdPPropertiesDataPublisherServiceComponent {
-    private static Log log = LogFactory.getLog(IdPPropertiesDataPublisherServiceComponent.class);
+    private static final Log log = LogFactory.getLog(IdPPropertiesDataPublisherServiceComponent.class);
 
     @Activate
     protected void activate(ComponentContext context) {
