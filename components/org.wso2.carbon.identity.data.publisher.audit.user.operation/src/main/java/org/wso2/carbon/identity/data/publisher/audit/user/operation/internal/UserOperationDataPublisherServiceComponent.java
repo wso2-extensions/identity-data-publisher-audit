@@ -36,7 +36,7 @@ import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
         immediate = true
 )
 public class UserOperationDataPublisherServiceComponent {
-    private static Log log = LogFactory.getLog(UserOperationDataPublisherServiceComponent.class);
+    private static final Log log = LogFactory.getLog(UserOperationDataPublisherServiceComponent.class);
 
     @Activate
     protected void activate(ComponentContext context) {
