@@ -99,6 +99,7 @@
                             org.wso2.carbon.databridge.commons; version="${carbon.analytics-common.version}",
                             org.wso2.carbon.identity.data.publisher.audit.*;
                             version="${project.version}",
+                            org.osgi.service.component; version="${osgi.service.component.imp.pkg.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <Export-Package>
