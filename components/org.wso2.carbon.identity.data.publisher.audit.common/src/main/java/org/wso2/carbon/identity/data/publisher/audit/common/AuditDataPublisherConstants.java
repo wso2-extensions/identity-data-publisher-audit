@@ -24,6 +24,7 @@ package org.wso2.carbon.identity.data.publisher.audit.common;
 public class AuditDataPublisherConstants {
     public static final String OVERALL_USER_DATA_EVENT_STREAM_NAME = "org.wso2.is.analytics.stream.OverallUserData:1.0.0";
     public static final String USER_MGT_DAS_DATA_PUBLISHER = "userOperationDataDASPublisher";
+    public static final String USER_MGT_DAS_PUBLISHER_ENABLED_PROPERTY = "userOperationDataDASPublisher.enable";
 
     public static final String IDP_PROPERTIES_UPDATE_EVENT_STREAM_NAME =
             "org.wso2.is.analytics.stream.IdPPropertiesUpdate:1.0.0";

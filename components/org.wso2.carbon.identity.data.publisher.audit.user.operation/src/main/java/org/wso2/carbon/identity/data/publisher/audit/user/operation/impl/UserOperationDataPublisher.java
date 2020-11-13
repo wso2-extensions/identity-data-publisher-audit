@@ -50,6 +50,9 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
     @Override
     public void handleEvent(Event event) throws IdentityEventException {
 
+        if (!isEnabled()) {
+            return;
+        }
         switch (event.getEventName()) {
             case IdentityEventConstants.Event.POST_ADD_USER:
                 handleAddUser(event);
@@ -221,5 +224,15 @@ public class UserOperationDataPublisher extends AbstractEventHandler {
     public String getName() {
 
         return AuditDataPublisherConstants.USER_MGT_DAS_DATA_PUBLISHER;
+    }
+
+    private boolean isEnabled() {
+
+        if (this.configs.getModuleProperties() != null) {
+            String handlerEnabled = this.configs.getModuleProperties().
+                    getProperty(AuditDataPublisherConstants.USER_MGT_DAS_PUBLISHER_ENABLED_PROPERTY);
+            return Boolean.parseBoolean(handlerEnabled);
+        }
+        return false;
     }
 }
