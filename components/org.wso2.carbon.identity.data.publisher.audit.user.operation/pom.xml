@@ -96,6 +96,8 @@
                             org.apache.commons.logging; version="${commons-logging.osgi.version.range}",
                             org.wso2.carbon.identity.application.authentication.framework.*;version="${carbon.identity.framework.package.import.version.range}",
                             org.wso2.carbon.identity.event.*;version="${carbon.identity.framework.package.import.version.range}",
+                            org.wso2.carbon.identity.base; version="${carbon.identity.framework.package.import.version.range}",
+                            org.wso2.carbon.identity.core.util; version="${carbon.identity.framework.package.import.version.range}",
                             org.wso2.carbon.databridge.commons; version="${carbon.analytics-common.version}",
                             org.wso2.carbon.identity.data.publisher.audit.*;
                             version="${project.version}",
