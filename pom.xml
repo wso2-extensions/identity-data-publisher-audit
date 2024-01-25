@@ -213,7 +213,7 @@
         <carbon.kernel.package.import.version.range>[4.5.0, 5.0.0)</carbon.kernel.package.import.version.range>
         <identity.framework.version>5.14.67</identity.framework.version>
         <carbon.identity.data.publisher.package.export.version>${project.version}</carbon.identity.data.publisher.package.export.version>
-        <carbon.identity.framework.package.import.version.range>[5.14.67, 7.0.0)</carbon.identity.framework.package.import.version.range>
+        <carbon.identity.framework.package.import.version.range>[5.14.67, 8.0.0)</carbon.identity.framework.package.import.version.range>
         <carbon.analytics-common.version>5.2.10</carbon.analytics-common.version>
         <carbon.analytics-common.imp.pkg.version.range>[5.2.0,6.0.0)</carbon.analytics-common.imp.pkg.version.range>
         <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
